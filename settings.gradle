@@ -1,0 +1,4 @@
+include ':plugin_package'
+include ':stander'
+include ':app'
+rootProject.name = "AndroidPluginDemo"
