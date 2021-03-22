@@ -48,7 +48,6 @@ public class BaseActivity extends Activity implements ActivityInterface {
 
     public void setContentView(int resId) {
         if(appActivity!=null){
-
             appActivity.setContentView(resId);
         }else{
             super.setContentView(resId);
@@ -61,7 +60,6 @@ public class BaseActivity extends Activity implements ActivityInterface {
 
     @Override
     public void startActivity(Intent intent) {
-
         Intent intentNew = new Intent();
         intentNew.putExtra("className", intent.getComponent().getClassName()); // TestActivity 全类名
         appActivity.startActivity(intentNew);
