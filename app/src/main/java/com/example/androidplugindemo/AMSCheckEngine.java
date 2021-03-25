@@ -2,6 +2,7 @@ package com.example.androidplugindemo;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
@@ -19,7 +20,7 @@ import static com.example.androidplugindemo.Parameter.PLUGIN;
 public class AMSCheckEngine {
 
     /**
-     * TODO 同学们，注意：此方法 适用于 21以下的版本 以及 21_22_23_24_25  26_27_28 等系统版本
+     *
      *
      * @param mContext
      * @throws ClassNotFoundException
@@ -31,10 +32,23 @@ public class AMSCheckEngine {
     public static void mHookAMS(final Context mContext) throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
 
         // 公共区域
-        Object mIActivityManagerSingleton = null; // TODO 同学们，注意：公共区域 适用于 21以下的版本 以及 21_22_23_24_25  26_27_28 等系统版本
-        Object mIActivityManager = null; // TODO 同学们，注意：公共区域 适用于 21以下的版本 以及 21_22_23_24_25  26_27_28 等系统版本
+        Object mIActivityManagerSingleton = null;
+        Object mIActivityManager = null;
+        //没有30的手机所以没有测试。
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {//version 30
 
-        if (AndroidSdkVersion.isAndroidOS_26_27_28()) {
+            Class actvityManager = Class.forName("android.app.ActivityTaskManager");
+//得到的是IActivityTaskManager ，因为都是object类型的所以赋值给了mIActivityManager也无所谓
+            mIActivityManager = actvityManager.getMethod("getService").invoke(null);//
+
+
+            Field singletonField = actvityManager.getDeclaredField("IActivityTaskManagerSingleton");
+            singletonField.setAccessible(true);
+            //拿到了IActivityTaskManagerSingleton 对象。因为都是object类型的所以赋值给了mIActivityManagerSingleton也无所谓
+            mIActivityManagerSingleton = singletonField.get(null);
+
+
+        } else if (AndroidSdkVersion.isAndroidOS_26_27_28()) {
             // @3 的获取    系统的 IActivityManager.aidl
             Class mActivityManagerClass = Class.forName("android.app.ActivityManager");
             mIActivityManager = mActivityManagerClass.getMethod("getService").invoke(null);
@@ -99,6 +113,7 @@ public class AMSCheckEngine {
         // 把系统里面的 IActivityManager 换成 我们自己写的动态代理 【第一步】
         //  @1    @2
         mInstanceField.set(mIActivityManagerSingleton, mIActivityManagerProxy);
+
     }
 
 }
