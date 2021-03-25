@@ -20,8 +20,6 @@ import static com.example.androidplugindemo.Parameter.PLUGIN;
 public class AMSCheckEngine {
 
     /**
-     *
-     *
      * @param mContext
      * @throws ClassNotFoundException
      * @throws NoSuchFieldException
@@ -35,7 +33,7 @@ public class AMSCheckEngine {
         Object mIActivityManagerSingleton = null;
         Object mIActivityManager = null;
         //没有30的手机所以没有测试。
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {//version 30
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {//version 29 30
 
             Class actvityManager = Class.forName("android.app.ActivityTaskManager");
 //得到的是IActivityTaskManager ，因为都是object类型的所以赋值给了mIActivityManager也无所谓
@@ -73,7 +71,12 @@ public class AMSCheckEngine {
         }
 
         // @2 的获取    动态代理
-        Class mIActivityManagerClass = Class.forName("android.app.IActivityManager");
+        Class mIActivityManagerClass;
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
+            mIActivityManagerClass = Class.forName("android.app.IActivityTaskManager");
+        } else {
+            mIActivityManagerClass = Class.forName("android.app.IActivityManager");
+        }
         final Object finalMIActivityManager = mIActivityManager;
         Object mIActivityManagerProxy = Proxy.newProxyInstance(mContext.getClassLoader(),
                 new Class[]{mIActivityManagerClass},
