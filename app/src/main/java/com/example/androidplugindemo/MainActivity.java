@@ -1,20 +1,21 @@
 package com.example.androidplugindemo;
 
 import android.Manifest;
+import android.content.ComponentName;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.os.Build;
-import android.os.Environment;
 import android.os.Bundle;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.io.File;
-import java.lang.reflect.Proxy;
+import static com.example.androidplugindemo.Parameter.PLUGIN;
 
+/**
+ * Time: 2019-08-10
+ * Author: Liudeli
+ * Description: 宿主主Activity
+ */
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -23,55 +24,31 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            requestPermissions(new String[]{Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE},123);
+            requestPermissions(new String[]{Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 123);
         }
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
-
-    // 加载插件
-    public void loadPlugin(View view) {
-        PluginManager.getInstance(this).loadPlugin();
-    }
-
-    // 启动插件里面的Activity
-    public void startPluginActivity(View view) {
-        File file = new File(Environment.getExternalStorageDirectory() + File.separator + "p.apk");
-        String path = file.getAbsolutePath();
-
-        // 获取插件包 里面的 Activity
-        PackageManager packageManager = getPackageManager();
-        PackageInfo packageInfo = packageManager.getPackageArchiveInfo(path, PackageManager.GET_ACTIVITIES);
-        ActivityInfo activityInfo = packageInfo.activities[0];// 这里是0就是com.example.plugin_package.PluginActivity，如果多了的话那就得遍历了。
-
-        // 占位  代理Activity
-        Intent intent = new Intent(this, ProxyActivity.class);
-        intent.putExtra("className", activityInfo.name);
+    /**
+     * 宿主启动宿主中的LoginActivity
+     *
+     * @param view
+     */
+    public void startMainLoginActivity(View view) {
+        Intent intent = new Intent(this, LoginActivity.class);
+        intent.putExtra(PLUGIN, true);
         startActivity(intent);
     }
 
-    // 注册 插件里面 配置的 静态广播接收者
-    public void loadStaticReceiver(View view) {
-        PluginManager.getInstance(this).parserApkAction();
+    /**
+     * 宿主启动[插件]中的PluginLoginActivity
+     *
+     * @param view
+     */
+    public void startPluginLoginActivity(View view) {
+        Intent intent = new Intent();
+        intent.putExtra(PLUGIN, true);
+        intent.setComponent(new ComponentName("com.example.plugin_package", "com.example.plugin_package.PluginLoginActivity"));
+        startActivity(intent);
     }
 
-    // 发送静态广播
-    public void sendStaticReceiver(View view) {
-        Intent intent = new Intent();
-        intent.setAction("plugin.static_receiver");
-        sendBroadcast(intent);
-    }
 }

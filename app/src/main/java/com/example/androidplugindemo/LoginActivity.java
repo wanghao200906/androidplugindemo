@@ -1,7 +1,6 @@
 package com.example.androidplugindemo;
 
 import android.os.Bundle;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,14 +8,14 @@ import androidx.appcompat.app.AppCompatActivity;
 /**
  * Time: 2019-08-10
  * Author: Liudeli
- * Description: 代理Activity,此Activity存在的目的是为了过安检(AMS检查)
+ * Description: 用来演示的宿主目标LoginActivity
  */
-public class ProxyActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Toast.makeText(this, "我是代理Activity....", Toast.LENGTH_SHORT).show();
+        setContentView(R.layout.activity_login);
     }
 }
